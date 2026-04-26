@@ -1,0 +1,7 @@
+﻿<Solution>
+  <Project Path="RealityLog.csproj" />
+  <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="RealityLog.Depth.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="RealityLog.OVR.csproj" />
+</Solution>
