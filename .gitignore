@@ -18,6 +18,8 @@
 
 # Recordings can get excessive in size
 /[Rr]ecordings/
+/[Qq]uest[Rr]ecordings/
+/[Rr]un[Ll]ogs/
 
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*

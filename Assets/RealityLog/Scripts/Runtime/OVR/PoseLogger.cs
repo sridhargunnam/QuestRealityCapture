@@ -31,8 +31,7 @@ namespace RealityLog.OVR
 
         private CsvWriter? writer = null;
 
-        private double baseOvrTimeSec;
-        private long baseUnixTimeMs;
+        private readonly OvrTimestampConverter timestampConverter = new();
 
         private double latestTimestamp;
 
@@ -73,10 +72,7 @@ namespace RealityLog.OVR
 
         private void Start()
         {
-            baseOvrTimeSec = OVRPlugin.GetTimeInSeconds();
-            baseUnixTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-
-            Debug.Log($"[Time Log] Base OVR Time (sec): {baseOvrTimeSec}, Base Unix Time (ms): {baseUnixTimeMs}");
+            timestampConverter.Reset();
 
             if (startLoggingOnStart)
             {
@@ -122,17 +118,10 @@ namespace RealityLog.OVR
             }
 
             writer.EnqueueRow(
-                ConvertOvrSecToUnixTimeMs(timestamp), timestamp,
+                timestampConverter.ConvertOvrSecToUnixTimeMs(timestamp), timestamp,
                 position.x, position.y, position.z,
                 orientation.x, orientation.y, orientation.z, orientation.w
             );
-        }
-
-        private long ConvertOvrSecToUnixTimeMs(double ovrTime)
-        {
-            var deltaSec = ovrTime - baseOvrTimeSec;
-            var deltaMs = (long) (deltaSec * 1000.0);
-            return baseUnixTimeMs + deltaMs;
         }
 
         private void OnDestroy()

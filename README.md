@@ -74,6 +74,9 @@ Example structure:
     ├── hmd_poses.csv
     ├── left_controller_poses.csv
     ├── right_controller_poses.csv
+    ├── left_hand_joints.csv
+    ├── right_hand_joints.csv
+    ├── body_joints.csv
     │
     ├── left_camera_raw/
     │   ├── <unixtimeMs>.yuv
@@ -109,6 +112,18 @@ Example structure:
 
   ```
   unix_time,ovr_timestamp,pos_x,pos_y,pos_z,rot_x,rot_y,rot_z,rot_w
+  ```
+
+### Hand and Body Joint CSV
+
+* Files: `left_hand_joints.csv`, `right_hand_joints.csv`, `body_joints.csv`
+* Format includes:
+
+  ```
+  unix_time,ovr_timestamp,source,skeleton_type,is_data_valid,is_data_high_confidence,
+  provider_is_tracked,provider_confidence,provider_scale,
+  thumb_pinch_strength,index_pinch_strength,middle_pinch_strength,ring_pinch_strength,pinky_pinch_strength,
+  bone_index,bone_id,parent_bone_index,pos_x,pos_y,pos_z,rot_x,rot_y,rot_z,rot_w
   ```
 
 ### Camera Characteristics (JSON)
@@ -158,6 +173,37 @@ To convert raw depth maps into linear or 3D form, refer to the companion project
 5. Data will be saved under the session folder as described above
 
 Required permissions (camera/scene access) are requested automatically at runtime.
+
+### Copy Recordings from Quest to Windows
+
+Recordings are stored on the Quest under:
+
+```text
+/sdcard/Android/data/com.t34400.QuestRealityCapture/files
+```
+
+If `adb` is not available on your Windows `PATH`, use the `adb.exe` bundled with the Unity Android module. In PowerShell:
+
+```powershell
+$adb = "C:\Program Files\Unity\Hub\Editor\6000.3.14f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\platform-tools\adb.exe"
+& $adb devices
+```
+
+If the device appears as `unauthorized`, put on the Quest headset, accept the USB debugging prompt, then run `& $adb devices` again.
+
+To copy all timestamped recording sessions to this project:
+
+```powershell
+$dst = "C:\Users\sgunnam\QuestApps\QuestRealityCapture\QuestRecordings"
+New-Item -ItemType Directory -Force $dst
+
+$sessions = & $adb shell "ls -d /sdcard/Android/data/com.t34400.QuestRealityCapture/files/20*"
+foreach ($session in $sessions) {
+    & $adb pull $session $dst
+}
+```
+
+This copies the recording session folders while skipping unreadable crash dump files such as `tombstone_02`.
 
 ---
 
